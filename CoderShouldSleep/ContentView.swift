@@ -56,7 +56,7 @@ struct ContentView: View {
                 Text("Calc")
             }))
         }.alert(isPresented: $err) {
-            Alert(title: Text("Error"), message: Text("Some error occures"), dismissButton: .default(Text("ok")))
+            Alert(title: Text("Error"), message: Text("Some error occured"), dismissButton: .default(Text("ok")))
         }
     }
     
@@ -76,11 +76,29 @@ struct ContentView: View {
         } catch {
             err = true
         }
-        
     }
     
     func alarm() {
         
+//        Cerating notification
+        let notification = UNMutableNotificationContent()
+        notification.title = "TIme to sleep"
+        notification.body = "To get a sleep of \(amountSleep) hours, you need to sleep now"
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: sleepDate, repeats: false)
+        
+        let uuidString = UUID().uuidString
+        let noti = UNNotificationRequest(identifier: uuidString, content: notification, trigger: trigger)
+        
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .badge, .sound]) { _, error in
+            if (error != nil) {
+                err = true
+            }
+            center.add(noti) {
+                print("\(String(describing: $0))")
+            }
+        }
     }
 }
 
